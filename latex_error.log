@@ -1,0 +1,82 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (MiKTeX 21.6)
+entering extended mode
+(C:/Users/kasna/AppData/Local/Temp/tmphxt4l6_p/circuit.tex
+LaTeX2e <2021-06-01>
+L3 programming layer <2021-06-01>
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/standalone\standalone.c
+ls
+Document Class: standalone 2018/03/26 v1.3a Class to compile TeX sub-files stan
+dalone
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/tools\shellesc.sty)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifluatex.sty
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/iftex\iftex.sty))
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/xkeyval\xkeyval.sty
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xkeyval\xkeyval.tex
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xkeyval\xkvutils.tex
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xkeyval\keyval.tex)))
+)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/standalone\standalone.c
+fg) (C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/base\article.cls
+Document Class: article 2021/02/12 v1.4n Standard LaTeX document class
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/base\size10.clo)))
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/qcircuit\qcircuit.sty
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xy.sty
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xy.tex
+Bootstrap'ing: catcodes, docmode,
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xyrecat.tex)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xyidioms.tex)
+
+ Xy-pic version 3.8.9 <2013/10/06>
+ Copyright (c) 1991-2013 by Kristoffer H. Rose <krisrose@tug.org> and others
+ Xy-pic is free software: see the User's Guide for details.
+
+Loading kernel: messages; fonts; allocations: state, direction,
+utility macros; pictures: \xy, positions, objects, decorations;
+kernel objects: directionals, circles, text; options; algorithms: directions,
+edges, connections;  Xy-pic loaded)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/iftex\ifpdf.sty)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xypdf.tex
+ Xy-pic option: PDF driver v.1.7 loaded))
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xymatrix.tex
+ Xy-pic option: Matrix feature v.3.14 loaded)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xyframe.tex
+ Xy-pic option: Frame and Bracket extension v.3.14 loaded)
+Xy-pic pdf driver: `frame' extension support
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xypdf-fr.tex
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xycurve.tex
+ Xy-pic option: Curve and Spline extension v.3.12 curve, circles, loaded)
+Xy-pic pdf driver: `curve' extension support
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xypdf-cu.tex
+loaded) loaded)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xyarrow.tex
+ Xy-pic option: Arrow and Path feature v.3.9 path, \ar, loaded)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/generic/xypic\xyarc.tex
+ Xy-pic option: Circle, Ellipse, Arc feature v.3.8 circles, ellipses,
+elliptical arcs, loaded))
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphicx.sty
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/graphics\graphics.sty
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/graphics\trig.sty)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/graphics-cfg\graphics.c
+fg)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/graphics-def\pdftex.def
+)))
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/l3backend\l3backend-pdf
+tex.def)
+No file circuit.aux.
+
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/context/base/mkii\supp-pdf.mk
+ii
+[Loading MPS to PDF converter (version 2006.09.02).]
+)
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
+ase.sty
+(C:\Users\kasna\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
+fg)) <xymatrix
+! Missing } inserted.
+<inserted text> 
+                }
+l.14 \\ }}
+          
+!  ==> Fatal error occurred, no output PDF file produced!
+Transcript written on C:\Users\kasna\AppData\Local\Temp\tmphxt4l6_p\circuit.log
+.
