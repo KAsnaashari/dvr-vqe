@@ -4,7 +4,7 @@ from lib.utils import *
 from lib.vqe import DVR_VQE
 from lib.pot_gen import get_pot_cr2
 
-# from lib.local_utils import base_dir, scratch_dir
+from lib.local_utils import base_dir, scratch_dir
 
 mol_params = cr2_params
 spin = 13
@@ -27,7 +27,7 @@ ansatz_options_list = [{
     'num_qubits': 4,
     'reps': reps,
     'partitions': [[0,1,2,3,4,5]]
-} for reps in [1, 2, 3]]
+} for reps in [1]]
 
 vqe_options = {
     'optimizers': ['L_BFGS_B.8000', 'SLSQP.1000'],

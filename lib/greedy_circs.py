@@ -92,6 +92,7 @@ def build_circuit_ent(ansatz_options, gates, simplify=False):
             if (not simplify) or ((simplify) and (q not in prev_rots)):
                 theta = Parameter(f'$x_{{{p}}}$')
                 p += 1
+                # ansatz.rz(theta, q)
                 ansatz.ry(theta, q)
                 prev_rots.append(q)
         ansatz.barrier(range(num_qubits))

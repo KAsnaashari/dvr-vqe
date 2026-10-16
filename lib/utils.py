@@ -1,6 +1,6 @@
 import numpy as np
 
-base_dir = '/arc/project/st-rkrems-1/kasra/dvr_vqe/2d/'
+base_dir = '/arc/project/st-rkrems-1/kasra/dvr_vqe/'
 scratch_dir = '/scratch/st-rkrems-1/kasra/dvr_vqe/'
 
 hartree = 219474.64
@@ -28,36 +28,37 @@ def print_log(s, file, end='\n', overwrite=False):
 
       f.close()
 
-def pauli_decompose(h):
-    from qiskit.opflow import X, Y, Z, I
+def pauli_decompose(h, tol=0):
+    from qiskit.quantum_info import SparsePauliOp
     import numpy as np
-    
-    pauli_list = [X, Y, Z, I]
+
+    pauli_list = ['X', 'Y', 'Z', 'I']
     num_qubits = np.log2(h.shape[0])
     k = 1
     while k < num_qubits:
         new_list = []
         for p in pauli_list:
-            new_list.append(p ^ X)
-            new_list.append(p ^ Y)
-            new_list.append(p ^ Z)
-            new_list.append(p ^ I)
+            new_list.append(p + 'X')
+            new_list.append(p + 'Y')
+            new_list.append(p + 'Z')
+            new_list.append(p + 'I')
         pauli_list = new_list
         k += 1
 
-    coefs = np.zeros(len(pauli_list))
+    coefs = np.zeros(len(pauli_list), dtype=complex)
     for i, p in enumerate(pauli_list):
-        if np.all(np.imag(p.to_matrix()) == 0):
-            coefs[i] = np.trace(np.dot(p.to_matrix(), h)) / 2**num_qubits
+        op = SparsePauliOp.from_list([(p, 1)])
+        if np.all(np.imag(op.to_matrix()) == 0):
+            coefs[i] = np.trace(np.dot(op.to_matrix(), h)) / 2**num_qubits
         else:
             coefs[i] = 0
+        if np.abs(coefs[i]) < tol:
+            coefs[i] = 0
 
-    out = None
+    op_list = []
     for i in range(coefs.shape[0]):
         if coefs[i] != 0:
-            if out is None:
-                out = coefs[i] * pauli_list[i]
-            else:
-                out += coefs[i] * pauli_list[i]
+            op_list.append((pauli_list[i], coefs[i]))
 
+    out = SparsePauliOp.from_list(op_list)
     return out

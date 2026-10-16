@@ -6,6 +6,8 @@ from lib.vqe import DVR_VQE
 from lib.pot_gen import get_pot_cr2
 
 # from lib.local_utils import base_dir, scratch_dir
+base_dir = '/cluster/home/kasnaashari/projects/bin/dvr_vqe/'
+results_dir = base_dir + 'results/'
 
 mol_params = cr2_params
 spin = 13
@@ -20,7 +22,7 @@ dvr_options = {
     'count': 16
 }
 vqe_options = {
-    'optimizers': ['L_BFGS_B.8000', 'SLSQP.1000'],
+    'optimizers': ['L_BFGS_B.8000'],
     # 'optimizers': ['COBYLA.100'],
     # 'repeats': 1, 
     'repeats': 10, 
@@ -36,5 +38,5 @@ ansatz_options = {
 }
 
 pot, lims = get_pot_cr2(spin)
-dvr_vqe = DVR_VQE(mol_params, pot, log_dir=scratch_dir + 'excited_states/')
+dvr_vqe = DVR_VQE(mol_params, pot, log_dir=results_dir + 'excited_states/')
 dvr_vqe.get_dvr_vqe(dvr_options, ansatz_options, vqe_options, excited_states=True)

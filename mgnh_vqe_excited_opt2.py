@@ -7,6 +7,8 @@ from lib.pot_gen import get_pot
 
 # from local_utils import base_dir, scratch_dir
 
+base_dir = '/cluster/home/kasnaashari/projects/bin/dvr_vqe/'
+results_dir = base_dir + 'results/'
 mol_params = mgnh_params
 pot_file = base_dir + 'mgnh.txt'
 
@@ -23,7 +25,7 @@ dvr_options = {
 }
 
 vqe_options = {
-    'optimizers': ['L_BFGS_B.8000', 'SLSQP.1000'],
+    'optimizers': ['L_BFGS_B.8000'],
     # 'optimizers': ['COBYLA.100'],
     # 'repeats': 1, 
     'repeats': 10, 
@@ -39,5 +41,6 @@ ansatz_options = {
 }
 
 pot = get_pot(pot_file, take_cos=False)
-dvr_vqe = DVR_VQE(mol_params, pot, log_dir=scratch_dir + 'excited_states/')
-dvr_vqe.get_dvr_vqe(dvr_options, ansatz_options, vqe_options, excited_states=True)
+dvr_vqe = DVR_VQE(mol_params, pot, log_dir=results_dir + 'excited_states/')
+opt_params = dvr_vqe.get_dvr_vqe(dvr_options, ansatz_options, vqe_options, excited_states=True)
+np.savez(results_dir + 'excited_states/mgnh_twolocal_opt_4/opt_params.npz', opt_params=opt_params)

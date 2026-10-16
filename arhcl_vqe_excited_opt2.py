@@ -1,4 +1,3 @@
-from math import cos
 import numpy as np
 from lib.dvr2d import *
 from lib.utils import *
@@ -7,6 +6,8 @@ from lib.pot_gen import get_pot
 
 # from lib.local_utils import base_dir, scratch_dir
 
+base_dir = '/cluster/home/kasnaashari/projects/bin/dvr_vqe/'
+results_dir = base_dir + 'results/'
 mol_params = arhcl_params
 pot_file = base_dir + 'arhcl.txt'
 
@@ -23,7 +24,7 @@ dvr_options = {
 }
 
 vqe_options = {
-    'optimizers': ['L_BFGS_B.8000', 'SLSQP.1000'],
+    'optimizers': ['L_BFGS_B.8000'],
     # 'optimizers': ['COBYLA.100'],
     # 'repeats': 1, 
     'repeats': 10, 
@@ -39,5 +40,5 @@ ansatz_options = {
 }
 
 pot = get_pot(pot_file, take_cos=True)
-dvr_vqe = DVR_VQE(mol_params, pot, log_dir=scratch_dir + 'excited_states/')
+dvr_vqe = DVR_VQE(mol_params, pot, log_dir=results_dir + 'excited_states/')
 dvr_vqe.get_dvr_vqe(dvr_options, ansatz_options, vqe_options, excited_states=True)

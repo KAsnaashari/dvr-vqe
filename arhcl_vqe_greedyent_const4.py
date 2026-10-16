@@ -52,7 +52,7 @@ ansatz_options = {
     'num_keep': 1, 
     'num_qubits': 6,
     'reps': 4,
-    'partitions': [[0], [1,2,3,4,5]]
+    'partitions': [[0,1,2,3,4,5]]
 }
 
 vqe_options = {

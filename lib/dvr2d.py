@@ -293,7 +293,6 @@ def get_ham_DVR(pot2d, dvr_options, mol_params=arhcl_params, count_thresh=None, 
                 h_dvr[K, j1, i1, K, j1, i1] += Vs_K[K, i1 + j1 * N_R_lim] / hartree
 
     # print(np.any(np.isnan(h_dvr)))
-
     h_dvr2 = np.einsum('ijk,oijplm,lmn->oikpln', C_s, h_dvr, C_s)
     h_dvr2 = h_dvr2.reshape((h_dvr2.shape[0] * h_dvr2.shape[1] * h_dvr2.shape[2], h_dvr2.shape[3] * h_dvr2.shape[4] * h_dvr2.shape[5]))
     # print(np.any(np.isnan(h_dvr2)))
