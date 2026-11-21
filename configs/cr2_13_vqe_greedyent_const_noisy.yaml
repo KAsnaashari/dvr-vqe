@@ -1,0 +1,29 @@
+# Reproduces cr2_13_vqe_greedyent_const_noisy.py (group: greedyent_const_noisy).
+# Generated from the original script by tools/verify_configs.py --generate.
+# Run with: python scripts/run_dvr_vqe.py configs/cr2_13_vqe_greedyent_const_noisy.yaml
+group: greedyent_const_noisy
+source_script: cr2_13_vqe_greedyent_const_noisy.py
+molecule: cr2
+spin: 13
+output_root: results
+log_dir: greedyent_circuits/cr2_13_noisy/
+noise_model: sherbrooke
+excited_states: false
+dvr_options:
+  type: 1d
+  box_lims: [5.2, 9]
+  dx: 0.2375
+  count: 16
+vqe_options:
+  optimizers: [QNSPSA.200]
+  repeats: 5
+  seed: 42
+ansatz_options:
+  type: greedyent
+  constructive: true
+  layers: 12
+  num_keep: 1
+  num_qubits: 4
+  reps: 2
+  partitions:
+  - [0, 1, 2, 3, 4, 5]

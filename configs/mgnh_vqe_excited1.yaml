@@ -1,0 +1,22 @@
+# Reproduces mgnh_vqe_excited1.py (group: excited_twolocal).
+# Generated from the original script by tools/verify_configs.py --generate.
+# Run with: python scripts/run_dvr_vqe.py configs/mgnh_vqe_excited1.yaml
+group: excited_twolocal
+source_script: mgnh_vqe_excited1.py
+molecule: mgnh
+potential_file: mgnh.txt
+take_cos: false
+output_root: scratch
+log_dir: excited_states/mgnh_64/
+excited_states: true
+dvr_options: {type: jacobi, J: 0, N_R: 40, N_theta: 4, l: 1, K_max: 0, r_min: 3, r_max: 9, trunc: 0}
+vqe_options:
+  optimizers: [COBYLA.8000, L_BFGS_B.8000, SLSQP.1000]
+  repeats: 10
+  seed: 42
+ansatz_options:
+  type: twolocal
+  rotation_blocks: [ry]
+  entanglement_blocks: cx
+  entanglement: linear
+  reps: 1

@@ -1,0 +1,26 @@
+# Reproduces arhcl_vqe_greedyent_const3.py (group: greedyent_const).
+# Generated from the original script by tools/verify_configs.py --generate.
+# Run with: python scripts/run_dvr_vqe.py configs/arhcl_vqe_greedyent_const3.yaml
+group: greedyent_const
+source_script: arhcl_vqe_greedyent_const3.py
+molecule: arhcl
+potential_file: arhcl.txt
+take_cos: true
+output_root: scratch
+log_dir: partitions/arhcl_64/
+excited_states: false
+dvr_options: {type: jacobi, J: 0, N_R: 50, N_theta: 4, l: 1, K_max: 0, r_min: 3, r_max: 7, trunc: 0}
+vqe_options:
+  optimizers: [L_BFGS_B.8000, SLSQP.1000]
+  repeats: 5
+  seed: 42
+ansatz_options:
+  type: greedyent
+  constructive: true
+  layers: 45
+  num_keep: 1
+  num_qubits: 6
+  reps: 3
+  partitions:
+  - [0]
+  - [1, 2, 3, 4, 5]

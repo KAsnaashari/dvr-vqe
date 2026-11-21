@@ -1,0 +1,23 @@
+# Reproduces arhcl_vqe_noent_noisy.py (group: noent_noisy).
+# Generated from the original script by tools/verify_configs.py --generate.
+# Run with: python scripts/run_dvr_vqe.py configs/arhcl_vqe_noent_noisy.yaml
+group: noent_noisy
+source_script: arhcl_vqe_noent_noisy.py
+molecule: arhcl
+potential_file: arhcl.txt
+take_cos: true
+output_root: results
+log_dir: greedyent_circuits/arhcl_noisy/
+noise_model: sherbrooke
+excited_states: false
+dvr_options: {type: jacobi, N_R: 35, N_theta: 4, l: 1, K_max: 0, r_min: 3.4, r_max: 5, trunc: 0, J: 0}
+vqe_options:
+  optimizers: [L_BFGS_B.8000, SLSQP.1000]
+  repeats: 5
+  beta: []
+  seed: 42
+ansatz_options:
+  type: twolocal
+  entanglement: opt
+  gates: []
+  reps: 0

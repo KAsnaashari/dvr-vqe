@@ -1,0 +1,25 @@
+# Reproduces cr2_13_vqe_excited_opt2.py (group: excited_opt).
+# Generated from the original script by tools/verify_configs.py --generate.
+# Run with: python scripts/run_dvr_vqe.py configs/cr2_13_vqe_excited_opt2.yaml
+group: excited_opt
+source_script: cr2_13_vqe_excited_opt2.py
+molecule: cr2
+spin: 13
+output_root: results
+log_dir: excited_states/
+excited_states: true
+dvr_options:
+  type: 1d
+  box_lims: [5.2, 9]
+  dx: 0.2375
+  count: 16
+vqe_options:
+  optimizers: [L_BFGS_B.8000]
+  repeats: 10
+  beta: [10000, 10000, 10000, 10000, 10000]
+  seed: 42
+ansatz_options:
+  type: twolocal
+  entanglement: opt
+  gates: [3, 1, 9, 4, 8]
+  reps: 2
