@@ -1,0 +1,12 @@
+# Tested with Python 3.11 (3.11.15) on Windows 11, November 2026.
+# The upper limits matter: lib/dvr2d.py uses numpy.math (removed in NumPy 2.0)
+# and lib/pot_gen.py imports scipy.interpolate.interp2d (removed in SciPy 1.14).
+numpy==1.26.4
+scipy==1.13.1
+qiskit==2.4.2
+qiskit-aer==0.18.4
+qiskit-algorithms==0.4.0
+qiskit-ibm-runtime==0.52.1
+pyyaml==6.0.4
+# Only needed for the notebooks:
+matplotlib==3.11.2
