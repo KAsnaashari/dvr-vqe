@@ -1,9 +1,27 @@
+"""VQE on DVR Hamiltonians: optimisation loops, excited states and adaptive circuits.
+
+Simulations use the Qiskit Aer V2 primitives, noiseless or with the FakeSherbrooke noise
+model. Energies are in the units of the Hamiltonian passed in (cm^-1 when called from
+:meth:`DVR_VQE.get_dvr_vqe`).
+"""
+
 from os import remove, cpu_count
 import numpy as np
 from .utils import print_log
 from multiprocessing import Pool
 
 def run_vqe(n, max_n, l, ansatz, h_dvr_pauli, vqe_options, log_file=None, noise_model=None):
+    """Optimise one ansatz with :func:`opt_vqe` and return the best optimiser's result.
+
+    Used as the worker function for multiprocessing in :meth:`DVR_VQE.opt_greedyent_vqe`.
+
+    Args:
+        n, max_n, l: Ansatz index, number of ansatze and layer index (for logging only).
+        ansatz, h_dvr_pauli, vqe_options, log_file, noise_model: See :func:`opt_vqe`.
+
+    Returns:
+        (counts, values, params, energy) of the optimiser that reached the lowest energy.
+    """
     print_log('--------', log_file)
     print_log(f'Optimizing ansatz {n+1}/{max_n} in layer {l+1}', log_file)
     converge_cnts, converge_vals, best_params, best_energies = opt_vqe(h_dvr_pauli, ansatz, vqe_options, noise_model=noise_model,
@@ -12,6 +30,16 @@ def run_vqe(n, max_n, l, ansatz, h_dvr_pauli, vqe_options, log_file=None, noise_
     return converge_cnts[opt_ind], converge_vals[opt_ind], best_params[opt_ind], best_energies[opt_ind]
 
 def parse_optimizer_string(s, ansatz=None, sampler=None):
+    """Create a Qiskit optimiser from a string ``'NAME.maxiter'``.
+
+    Args:
+        s: One of ``COBYLA``, ``L_BFGS_B``, ``SLSQP``, ``NELDER_MEAD`` or ``QNSPSA``, followed by a dot
+            and the iteration (or function-evaluation) limit, e.g. ``'L_BFGS_B.8000'``.
+        ansatz, sampler: Needed only for QNSPSA (fidelity estimate).
+
+    Returns:
+        A qiskit_algorithms optimiser instance.
+    """
     from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, SLSQP, NELDER_MEAD, QNSPSA
 
     name, maxiter = s.split('.')
@@ -29,6 +57,26 @@ def parse_optimizer_string(s, ansatz=None, sampler=None):
 
 
 def opt_vqe(h_dvr_pauli, ansatz, vqe_options, log_file=None, opt_params=None, noise_model=None):
+    """Run VQE for one ansatz with each optimiser in ``vqe_options``.
+
+    Args:
+        h_dvr_pauli: Hamiltonian as a SparsePauliOp.
+        ansatz: Parameterised circuit.
+        vqe_options: dict with ``optimizers`` (list of strings, see :func:`parse_optimizer_string`),
+            ``repeats`` (random restarts per optimiser), ``seed`` (for ``algorithm_globals``) and, for
+            excited states, ``beta`` (overlap penalties).
+        log_file: Log file path or None.
+        opt_params: Optimal parameters of the lower states. If given, minimise the excited-state
+            cost of :func:`excited_cost_function` instead of the energy.
+        noise_model: None (noiseless) or ``'sherbrooke'`` (FakeSherbrooke noise model, 20 000 shots).
+
+    Returns:
+        (converge_cnts, converge_vals, best_params, best_energies): one entry per optimiser, from
+        the best of its ``repeats`` runs. Energies are in the units of ``h_dvr_pauli``.
+
+    Note: the random initial points come from ``numpy.random``, which ``seed`` does not seed, so
+    repeated runs can differ slightly.
+    """
     import numpy as np
     from .utils import print_log
     from qiskit_algorithms.minimum_eigensolvers import VQE
@@ -139,6 +187,24 @@ def swap_test_overlap_sq(ansatz, p_a, p_b, estimator):
     return max(0.0, min(1.0, 2*p0 - 1))  # |<ψ|φ>|^2 = 2*P(anc=0) - 1
 
 def excited_cost_function(h_dvr_pauli, ansatz, opt_p_list, betas, estimator, noise_model=None, callback=None):
+    """Build the cost function for variational quantum deflation (VQD).
+
+    cost(p) = <psi(p)|H|psi(p)> + sum_k beta_k |<psi_k|psi(p)>|^2, where psi_k are the previously
+    found states. Overlaps are exact statevector overlaps without noise, or SWAP-test estimates
+    (:func:`swap_test_overlap_sq`) with noise.
+
+    Args:
+        h_dvr_pauli: Hamiltonian (SparsePauliOp).
+        ansatz: Parameterised circuit.
+        opt_p_list: Parameters of the lower states.
+        betas: Penalty weights, one per lower state (units of the Hamiltonian).
+        estimator: Estimator V2 used for the energy.
+        noise_model: None or a noise-model name.
+        callback: Called as callback(eval_count, p, cost, 0).
+
+    Returns:
+        Function of the parameter vector returning the cost (float).
+    """
     from qiskit.quantum_info import Statevector
 
     eval_count = 0
@@ -182,6 +248,16 @@ def excited_cost_function(h_dvr_pauli, ansatz, opt_p_list, betas, estimator, noi
     return cost
 
 class DVR_VQE:
+    """Build DVR Hamiltonians for a molecule and solve them with VQE.
+
+    Args:
+        mol_params: Molecule parameters (e.g. ``lib.dvr2d.arhcl_params``, ``lib.dvr1d.cr2_params``).
+        pot_fun: Potential function: V(R [angstrom], cos(theta)) in cm^-1 for 2D, V(r [bohr]) in
+            hartree for 1D.
+        log_dir: Directory for logs and ``.npz`` results (must exist), or None.
+        noise_model: None or ``'sherbrooke'``.
+        multiprocess: Optimise candidate circuits in parallel in the greedy-entangling search.
+    """
     def __init__(self, mol_params, pot_fun, log_dir=None, noise_model=None, multiprocess=False) -> None:
         self.mol_params = mol_params
         self.log_dir = log_dir
@@ -190,10 +266,13 @@ class DVR_VQE:
         self.multiprocess = multiprocess
 
     def gen_id(self):
+        """Return the current Unix time as a string, used as a default run id."""
         import time
         return str(int(time.time()))
 
     def get_DVR_Rtheta(self, dvr_options):
+        """Return the DVR grid for ``dvr_options`` (see :func:`lib.dvr2d.get_DVR_Rtheta` / :func:`lib.dvr1d.get_dvr_r`).
+        """
         from .utils import au_to_angs
         from .dvr2d import get_DVR_Rtheta
         from .dvr1d import get_dvr_r
@@ -206,6 +285,14 @@ class DVR_VQE:
             return Rs_DVR
 
     def get_h_dvr(self, dvr_options, J=0, offdiagonals=None):
+        """Return the DVR Hamiltonian (hartree) for ``dvr_options``.
+
+        Args:
+            dvr_options: Options with ``type`` ``'1d'`` or ``'jacobi'`` (see :mod:`lib.dvr1d` /
+                :mod:`lib.dvr2d`).
+            J: Unused; the 2D Hamiltonian takes J from ``dvr_options['J']``.
+            offdiagonals: 1D only: keep only this many off-diagonals (band matrix).
+        """
         if dvr_options['type'] == '1d':
             from .dvr1d import get_ham_DVR
             ham_dvr = get_ham_DVR(self.pot, dvr_options, mol_params=self.mol_params)
@@ -218,6 +305,16 @@ class DVR_VQE:
             return get_ham_DVR(self.pot, dvr_options, mol_params=self.mol_params)
 
     def get_ansatz(self, ansatz_options, num_qubits):
+        """Build a fixed ansatz circuit.
+
+        If ``ansatz_options`` has ``gates``, build the greedy-entangling circuit with those CNOTs
+        (:func:`lib.greedy_circs.build_circuit_ent`); otherwise a TwoLocal circuit with
+        ``rotation_blocks``, ``entanglement_blocks``, ``entanglement`` and ``reps``.
+
+        Args:
+            ansatz_options: Ansatz options.
+            num_qubits: Number of qubits.
+        """
         from qiskit.circuit.library import TwoLocal
         from .greedy_circs import build_circuit_ent
         
@@ -249,12 +346,21 @@ class DVR_VQE:
     #     return out
 
     def print_options(self, options_list, options_file):
+        """Write a list of option dicts to ``options_file`` as JSON."""
         import json
 
         with open(options_file, 'w') as f:
             f.write(json.dumps(options_list))
 
     def get_greedy_ansatz(self, ansatz_options, best_circs, log_file=None):
+        """Generate candidate circuits for one layer of the greedy search.
+
+        Draws ``ansatz_options['samples']`` random gate layers (integer codes 0..``max_gate``, see
+        :func:`lib.greedy_circs.build_circuit`) and appends each to every circuit in ``best_circs``.
+
+        Returns:
+            (circuit codes, circuits) with duplicates and parameter-free circuits removed.
+        """
         import numpy as np
         from .greedy_circs import build_circuit
 
@@ -281,6 +387,12 @@ class DVR_VQE:
         return circ_list_final, ansatz_list
 
     def opt_greedy_vqe(self, h_dvr_pauli, ansatz_options, vqe_options, log_file=None, prev_circs=None):
+        """Optimise all candidates for one greedy layer and keep the ``num_keep`` best.
+
+        Returns:
+            (best_circs, converge_cnts, converge_vals, best_params, best_energies) for the kept
+            circuits.
+        """
         import numpy as np
         from .utils import print_log
 
@@ -317,6 +429,21 @@ class DVR_VQE:
         return best_circs, converge_cnts, converge_vals, best_params, best_energies
 
     def opt_greedyent_vqe(self, h_dvr_pauli, ansatz_options, vqe_options, allowed_gates, log_file=None, gates=None):
+        """One step of the greedy-entangling search: try adding each allowed CNOT not yet in ``gates``.
+
+        Args:
+            h_dvr_pauli: Hamiltonian (SparsePauliOp).
+            ansatz_options: Needs ``num_qubits``, ``reps`` and ``constructive``.
+            vqe_options: See :func:`opt_vqe`.
+            allowed_gates: Indices of CNOTs allowed by the qubit partition
+                (:func:`lib.greedy_circs.find_allowed_gates`).
+            log_file: Log file path or None.
+            gates: CNOT indices already chosen.
+
+        Returns:
+            (best_gate, converge_cnts, converge_vals, best_params, best_energy) for the CNOT that gave
+            the lowest energy.
+        """
         import numpy as np
         from .utils import print_log
         from .greedy_circs import build_circuit_ent
@@ -371,6 +498,28 @@ class DVR_VQE:
         return best_gate, converge_cnts, converge_vals, best_params, best_energies
 
     def get_dvr_vqe(self, dvr_options, ansatz_options, vqe_options, excited_states=False, cont=0):
+        """Build the DVR Hamiltonian, map it to qubits and run VQE.
+
+        The Hamiltonian is converted to cm^-1, decomposed into Pauli strings and solved with the
+        ansatz selected by ``ansatz_options['type']``:
+
+        * ``'twolocal'``: fixed TwoLocal (or ``gates``) circuit; optionally excited states by VQD.
+        * ``'greedy'``: layer-by-layer random search (:meth:`opt_greedy_vqe`).
+        * ``'greedyent'``: CNOT-by-CNOT greedy entangling search (:meth:`opt_greedyent_vqe`).
+        * ``'block'``: all block-structured circuits (:mod:`lib.block_circs`).
+
+        Logs and ``.npz`` results go to ``<log_dir>/<run id>/``.
+
+        Args:
+            dvr_options: Grid options (see :meth:`get_h_dvr`).
+            ansatz_options: Ansatz options.
+            vqe_options: See :func:`opt_vqe`; ``beta`` sets the number of excited states.
+            excited_states: Compute excited states after the ground state (``'twolocal'`` only).
+            cont: Continue a previous run from step ``cont`` using the saved ``.npz`` files.
+
+        Returns:
+            For ``'twolocal'``, the optimal parameters of each state found (or None); otherwise None.
+        """
         from .dvr2d import pauli_decompose
         from .utils import hartree
         from .greedy_circs import build_circuit, build_circuit_ent, find_allowed_gates

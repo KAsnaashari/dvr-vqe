@@ -1,3 +1,10 @@
+"""Physical constants, logging and Pauli decomposition shared by the DVR and VQE code.
+
+Constants: ``hartree`` (cm^-1 per hartree), ``da_to_au`` (electron masses per dalton),
+``au_to_angs`` (angstrom per bohr). ``base_dir``, ``scratch_dir`` and ``results_dir``
+come from :mod:`lib.paths`.
+"""
+
 import numpy as np
 
 from .paths import get_data_dir, get_scratch_dir, get_results_dir
@@ -12,6 +19,15 @@ da_to_au = 1822.888486209
 au_to_angs = 0.529177249
 
 def print_log(s, file, end='\n', overwrite=False):
+   """Print ``s`` and append it to a log file.
+
+   Args:
+       s: Object to log (converted with ``str``).
+       file: Log file path, or ``None`` to only print.
+       end: Line terminator.
+       overwrite: If True, replace the last line (on screen with a carriage return and in the
+           file), used for progress counters.
+   """
    s = str(s)
    if not overwrite:
       print(s, end=end)
@@ -33,6 +49,16 @@ def print_log(s, file, end='\n', overwrite=False):
       f.close()
 
 def pauli_decompose(h, tol=0):
+    """Decompose a real symmetric matrix into Pauli strings.
+
+    Args:
+        h: Square matrix of size 2**n.
+        tol: Coefficients with absolute value below ``tol`` are dropped.
+
+    Returns:
+        SparsePauliOp: the operator sum_P c_P P with c_P = Tr(P h) / 2**n. Pauli strings with an
+        imaginary matrix (odd number of Y) are skipped, which is exact for real symmetric ``h``.
+    """
     from qiskit.quantum_info import SparsePauliOp
     import numpy as np
 

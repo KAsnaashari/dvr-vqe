@@ -1,3 +1,9 @@
+"""One-dimensional DVR for diatomic molecules (used for Cr2).
+
+Atomic units throughout: distances in bohr, energies in hartree, masses in electron
+masses. ``cr2_params`` holds the name and reduced mass of 52Cr2.
+"""
+
 from .utils import da_to_au
 m_cr = 51.940509 * da_to_au
 
@@ -7,6 +13,18 @@ cr2_params = {
 }
 
 def dvr(v, N, xlim, m=1):
+    """Colbert-Miller DVR Hamiltonian on a uniform grid over a finite interval.
+
+    Args:
+        v: Potential function of x.
+        N: Number of grid points.
+        xlim: (x_min, x_max), endpoints included.
+        m: Mass.
+
+    Returns:
+        (N, N) Hamiltonian matrix (atomic units if v is in hartree, x in bohr, m in electron
+        masses).
+    """
     import numpy as np
 
     dx = (xlim[1] - xlim[0]) / (N - 1)
@@ -22,6 +40,16 @@ def dvr(v, N, xlim, m=1):
     return dvr_t + dvr_v
 
 def dvr2(x, v, m=1):
+    """Same as :func:`dvr` but for given grid points ``x`` and potential values ``v``.
+
+    Args:
+        x: Uniform grid (array).
+        v: Potential values on the grid.
+        m: Mass.
+
+    Returns:
+        Hamiltonian matrix.
+    """
     import numpy as np
 
     dx = x[1] - x[0]
@@ -38,6 +66,18 @@ def dvr2(x, v, m=1):
     return dvr_t + dvr_v
 
 def dvr_0inf(r, v, m=1, start_ind=0):
+    """Colbert-Miller radial DVR Hamiltonian for r in (0, inf).
+
+    Args:
+        r: Uniform radial grid (bohr); the spacing is taken from r[1] - r[0].
+        v: Potential values on the grid (hartree).
+        m: Reduced mass (electron masses).
+        start_ind: Index of r[0] on the full grid starting at r = 0, so that the (0, inf)
+            boundary terms are evaluated correctly for a grid that starts away from the origin.
+
+    Returns:
+        Hamiltonian matrix (hartree).
+    """
     import numpy as np
 
     dr = r[1] - r[0]
@@ -53,6 +93,17 @@ def dvr_0inf(r, v, m=1, start_ind=0):
     return dvr
 
 def get_dvr_r(dvr_options):
+    """Radial grid for the 1D DVR.
+
+    Args:
+        dvr_options: dict with ``box_lims`` (r_min, r_max) in bohr, ``dx`` grid spacing in bohr
+            and ``count`` number of points.
+
+    Returns:
+        Array of the first ``count`` points of ``linspace(0, r_max, int(r_max / dx) + 1)`` that are
+        larger than r_min (bohr). The actual spacing is r_max / int(r_max / dx), which equals ``dx``
+        only when r_max is a multiple of ``dx``.
+    """
     import numpy as np
     box_max = dvr_options['box_lims'][1]
     box_min = dvr_options['box_lims'][0]
@@ -63,6 +114,16 @@ def get_dvr_r(dvr_options):
     return r_box[:dvr_options['count']]
 
 def get_ham_DVR(pot1d, dvr_options, mol_params):
+    """1D DVR Hamiltonian of a diatomic molecule.
+
+    Args:
+        pot1d: Potential function V(r), r in bohr, V in hartree.
+        dvr_options: Grid options, see :func:`get_dvr_r`.
+        mol_params: dict with reduced mass ``mu`` (electron masses).
+
+    Returns:
+        (count, count) Hamiltonian matrix (hartree).
+    """
     import numpy as np
     r_box = get_dvr_r(dvr_options)
     N = r_box.shape[0]
@@ -71,6 +132,18 @@ def get_ham_DVR(pot1d, dvr_options, mol_params):
     return dvr_0inf(r_box, v, m=mol_params['mu'], start_ind=start_ind)
 
 def dvr_0pi(theta, v, m=1):
+    """DVR Hamiltonian for an angle theta in (0, pi).
+
+    Not used by the run scripts. Purpose inferred from the code; please check.
+
+    Args:
+        theta: Angular grid (radians).
+        v: Potential values on the grid.
+        m: Mass (or moment-of-inertia factor).
+
+    Returns:
+        Hamiltonian matrix.
+    """
     import numpy as np
 
     N = theta.shape[0]
@@ -84,6 +157,19 @@ def dvr_0pi(theta, v, m=1):
     return dvr_t + dvr_v
 
 def dvr_xy(r, theta, v, m=1, start_ind=0):
+    """Product DVR Hamiltonian on an (r, theta) grid.
+
+    Not used by the run scripts. Purpose inferred from the code; please check.
+
+    Args:
+        r, theta: Flattened grid coordinates (bohr, radians).
+        v: Potential values on the grid.
+        m: Mass.
+        start_ind: Offset of the radial grid, as in :func:`dvr_0inf`.
+
+    Returns:
+        Hamiltonian matrix.
+    """
     import numpy as np
 
     N_r = np.unique(r).shape[0]
