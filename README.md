@@ -153,3 +153,7 @@ The notebooks are the analysis and exploration done during the project. Notebook
 | `visualization_arhcl.ipynb` | ArHCl excited-state energies and state fidelities from the saved results |
 | `visualization_mgnh.ipynb` | MgNH excited-state energies and state fidelities from the saved results |
 | `vqe_opt.ipynb` | VQE convergence for ArHCl compared with the exact 32-point and converged ground-state energies |
+
+## License
+
+MIT License, copyright 2023–2026 Kasra Asnaashari. See [LICENSE](LICENSE).
