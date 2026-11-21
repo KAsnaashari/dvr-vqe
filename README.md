@@ -66,8 +66,9 @@ As a check against the original calculations, `configs/arhcl_vqe_noent.yaml` (Ar
 | `tools/verify_configs.py` | Checks that each config reproduces the options of the original script (see below). |
 | `arhcl.txt`, `mgnh.txt` | Potential-energy surfaces of ArHCl and MgNH: three columns, R (Å), cos θ (ArHCl) or θ in radians (MgNH), and V (cm⁻¹). |
 | `*.ipynb` | Analysis and exploration notebooks (see below). |
-| `*_vqe_*.py` | The original run scripts, kept until the configs replace them. |
+| `legacy/` | The original run scripts that the configs replace (see `legacy/README.md`). |
 | `circuit_opt.py`, `cr2_vqe_excited.py`, `cr2_vqe_optim.py`, `single_param_vqe.py`, `single_param_vqe_layered.py` | Scripts with their own logic (custom circuit searches, DVR-grid optimisation, grid inspection) that the runner does not cover. |
+| `mgnh_vqe_excited.py`, `mgnh_vqe_greedy.py` | Early scripts written for an older version of `lib/`; they do not run with the current code. |
 
 ## Reproducing the calculations
 
