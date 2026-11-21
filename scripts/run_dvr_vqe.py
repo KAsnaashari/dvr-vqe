@@ -116,6 +116,23 @@ def _output_root(name):
     raise ValueError(f"output_root must be 'scratch' or 'results', not {name!r}")
 
 
+def print_exact_energies(config, n=6):
+    """Print the lowest exact eigenvalues (cm^-1) of the DVR Hamiltonian.
+
+    Diagonalises the same matrix that ``get_dvr_vqe`` maps onto qubits, as a
+    reference for the VQE energies. Does not affect the VQE run.
+    """
+    import numpy as np
+    from lib.utils import hartree
+    from lib.vqe import DVR_VQE
+
+    dvr_options = _restore_tuples('dvr_options', config['dvr_options'])
+    dvr_vqe = DVR_VQE(get_mol_params(config), get_potential(config))
+    energies = np.linalg.eigvalsh(dvr_vqe.get_h_dvr(dvr_options, J=0) * hartree)
+    print(f'Exact DVR eigenvalues (cm^-1), lowest {n}: '
+          + ', '.join(f'{e:.6f}' for e in energies[:n]))
+
+
 def run(config, dry_run=False):
     """Run every calculation described by ``config``."""
     import numpy as np
@@ -163,6 +180,8 @@ def main(argv=None):
     parser.add_argument('--scratch-dir', help='directory for scratch output (DVR_VQE_SCRATCH_DIR)')
     parser.add_argument('--results-dir', help='directory for results (DVR_VQE_RESULTS_DIR)')
     parser.add_argument('--dry-run', action='store_true', help='print the resolved options and exit')
+    parser.add_argument('--exact', action='store_true',
+                        help='after the run, print the exact eigenvalues of the DVR Hamiltonian')
     args = parser.parse_args(argv)
 
     for value, var in [(args.data_dir, 'DVR_VQE_DATA_DIR'),
@@ -176,6 +195,8 @@ def main(argv=None):
         # DVR_VQE creates one sub-directory per run but not its parents.
         os.makedirs(_output_root(config['output_root']) + config['log_dir'], exist_ok=True)
     run(config, dry_run=args.dry_run)
+    if args.exact and not args.dry_run:
+        print_exact_energies(config)
 
 
 if __name__ == '__main__':
