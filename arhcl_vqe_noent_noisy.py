@@ -7,8 +7,7 @@ from lib.pot_gen import get_pot
 
 # from lib.local_utils import base_dir, scratch_dir
 
-base_dir = '/cluster/home/kasnaashari/projects/bin/dvr_vqe/'
-results_dir = base_dir + 'results/'
+# base_dir, scratch_dir and results_dir come from lib.utils (see lib/paths.py)
 mol_params = arhcl_params
 pot_file = base_dir + 'arhcl.txt'
 

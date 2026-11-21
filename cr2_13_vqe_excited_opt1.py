@@ -6,8 +6,7 @@ from lib.vqe import DVR_VQE
 from lib.pot_gen import get_pot_cr2
 
 # from lib.local_utils import base_dir, scratch_dir
-base_dir = '/cluster/home/kasnaashari/projects/bin/dvr_vqe/'
-results_dir = base_dir + 'results/'
+# base_dir, scratch_dir and results_dir come from lib.utils (see lib/paths.py)
 
 mol_params = cr2_params
 spin = 13
