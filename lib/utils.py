@@ -1,7 +1,11 @@
 import numpy as np
 
-base_dir = '/arc/project/st-rkrems-1/kasra/dvr_vqe/'
-scratch_dir = '/scratch/st-rkrems-1/kasra/dvr_vqe/'
+from .paths import get_data_dir, get_scratch_dir, get_results_dir
+
+# Set through DVR_VQE_DATA_DIR / DVR_VQE_SCRATCH_DIR / DVR_VQE_RESULTS_DIR (see lib/paths.py).
+base_dir = get_data_dir()
+scratch_dir = get_scratch_dir()
+results_dir = get_results_dir()
 
 hartree = 219474.64
 da_to_au = 1822.888486209
