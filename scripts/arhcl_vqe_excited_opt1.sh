@@ -16,7 +16,7 @@
 #SBATCH --mail-type=FAIL
 
 module load stack/2024-06 gcc/12.2.0 python/3.11.6
-source "${DVR_VQE_VENV:-$HOME/envs/spinenv3_ubuntu}/bin/activate"
+source "${DVR_VQE_VENV:-$HOME/envs/dvr-vqe}/bin/activate"
 
 cd "$SLURM_SUBMIT_DIR"
 export DVR_VQE_DATA_DIR="${DVR_VQE_DATA_DIR:-$SLURM_SUBMIT_DIR}"
