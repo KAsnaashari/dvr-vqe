@@ -1,21 +1,26 @@
 #!/bin/bash
 
+# Submit from the repository root:  mkdir -p outputs && sbatch scripts/arhcl_vqe_noent.sh
+# Optional: set DVR_VQE_VENV, DVR_VQE_DATA_DIR, DVR_VQE_SCRATCH_DIR or
+# DVR_VQE_RESULTS_DIR before submitting to override the defaults below.
+
 #SBATCH -n 1
 #SBATCH --cpus-per-task=32
 #SBATCH --time=12:00:00
 #SBATCH --job-name="noent"
 #SBATCH --mem-per-cpu=1024
-#SBATCH --output="/cluster/home/kasnaashari/projects/bin/dvr_vqe/outputs/arhcl_vqe_noent.out"
-#SBATCH --error="/cluster/home/kasnaashari/projects/bin/dvr_vqe/outputs/arhcl_vqe_noent.err"
+#SBATCH --output="outputs/arhcl_vqe_noent.out"
+#SBATCH --error="outputs/arhcl_vqe_noent.err"
 #SBATCH --open-mode=truncate
 #SBATCH --mail-type=END
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=k.asnaashari@gmail.com
 
-# module load gcc/9.3.0 python/3.11.2 openmpi/4.1.4
 module load stack/2024-06 gcc/12.2.0 python/3.11.6
-# source /cluster/home/kasnaashari/envs/spinenv3/bin/activate
-source /cluster/home/kasnaashari/envs/spinenv3_ubuntu/bin/activate
-export PYTHONPATH="$HOME/projects/share:$HOME/projects/lib/python:$HOME/projects/lib/my_libs:$HOME/projects/lib/pyrho:$PYTHONPATH:"
- 
-python /cluster/home/kasnaashari/projects/bin/dvr_vqe/arhcl_vqe_noent.py
+source "${DVR_VQE_VENV:-$HOME/envs/spinenv3_ubuntu}/bin/activate"
+
+cd "$SLURM_SUBMIT_DIR"
+export DVR_VQE_DATA_DIR="${DVR_VQE_DATA_DIR:-$SLURM_SUBMIT_DIR}"
+export DVR_VQE_SCRATCH_DIR="${DVR_VQE_SCRATCH_DIR:-$SCRATCH/dvr_vqe}"
+export DVR_VQE_RESULTS_DIR="${DVR_VQE_RESULTS_DIR:-$SLURM_SUBMIT_DIR/results}"
+
+python scripts/run_dvr_vqe.py configs/arhcl_vqe_noent.yaml

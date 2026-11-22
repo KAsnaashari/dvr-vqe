@@ -1,4 +1,17 @@
+"""Block-structured entangling circuits: enumerate qubit partitions into blocks of 1-3
+qubits and build the corresponding circuit.
+"""
+
 def block_divider(l):
+    """Enumerate the ways to split qubits into blocks of one to three qubits.
+
+    Args:
+        l: List of qubit labels (single digits).
+
+    Returns:
+        For two qubits, a list with one string; otherwise a set of strings such as ``'0,12,34'``
+        (blocks separated by commas).
+    """
     if len(l) == 2:
         return [f'{l[0]}{l[1]}']
 
@@ -54,6 +67,17 @@ def block_divider(l):
     return out
 
 def build_circuit_from_s(s):
+    """Build a block circuit from a string such as ``'0,12,34'``.
+
+    RY on every qubit, CNOTs within each two- and three-qubit block, then RY on every qubit that
+    was entangled.
+
+    Args:
+        s: Block string from :func:`block_divider`.
+
+    Returns:
+        QuantumCircuit.
+    """
     from qiskit import QuantumCircuit
     from qiskit.circuit import Parameter
     

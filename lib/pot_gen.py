@@ -1,3 +1,7 @@
+"""Potential-energy surfaces: Cr2 curves (``cr2_pot_points``: R in bohr, V in hartree, keyed
+by total spin S) and 2D interpolation of the ArHCl / MgNH surfaces from data files.
+"""
+
 import numpy as np
 
 cr2_pot_points = {
@@ -32,6 +36,13 @@ cr2_pot_points = {
 }
 
 def pot_fun(r, lims, interp_f):
+   """Evaluate an interpolated potential, held constant below the first data point.
+
+   Args:
+       r: Distance(s) (bohr).
+       lims: (r_first, r_last) of the data.
+       interp_f: Interpolating function.
+   """
    if type(r) is not np.ndarray:
       r = np.array([r])
    out = np.zeros(r.shape)
@@ -40,6 +51,14 @@ def pot_fun(r, lims, interp_f):
    return out
 
 def get_pot_cr2(s):
+   """Cubic-spline Cr2 potential curve for total spin ``s``.
+
+   Args:
+       s: Total spin S (1, 3, ..., 13), key of ``cr2_pot_points``.
+
+   Returns:
+       (V, lims): V(r) with r in bohr and V in hartree, and the (first, last) r of the data.
+   """
    from scipy.interpolate import interp1d
 
    rs = cr2_pot_points[s][0]
@@ -48,6 +67,14 @@ def get_pot_cr2(s):
    return lambda r: pot_fun(r, lims, interp1d(rs, ps, kind='cubic')), lims
 
 def interp_pot2d(r, x, v):
+    """Piecewise-linear interpolation of scattered 2D potential data.
+
+    Args:
+        r, x, v: Data points (R in angstrom, cos(theta), V in cm^-1).
+
+    Returns:
+        Function V(R, cos(theta)) of two arrays.
+    """
     from scipy.interpolate import bisplrep, bisplev, interp2d, LinearNDInterpolator
 
     rx = np.asarray([(i, j) for i, j in zip(r, x)])
@@ -55,6 +82,18 @@ def interp_pot2d(r, x, v):
     return lambda a, b: LinearNDInterpolator(rx, v)(np.asarray([(i, j) for i, j in zip(a, b)]))
 
 def get_pot(pot_file, take_cos):
+   """Read a 2D potential file and return an interpolating function.
+
+   The file has three fixed-width columns: R (angstrom), angle and V (cm^-1).
+
+   Args:
+       pot_file: Path to the file (``arhcl.txt`` or ``mgnh.txt``).
+       take_cos: True if the second column already holds cos(theta) (ArHCl); False if it holds
+           theta in radians (MgNH).
+
+   Returns:
+       Function V(R, cos(theta)) (see :func:`interp_pot2d`).
+   """
    import numpy as np
    
    r = []

@@ -1,0 +1,36 @@
+# Reproduces cr2_5_vqe_excited.py (group: excited_twolocal).
+# Generated from the original script by tools/verify_configs.py --generate.
+# Run with: python scripts/run_dvr_vqe.py configs/cr2_5_vqe_excited.yaml
+group: excited_twolocal
+source_script: cr2_5_vqe_excited.py
+molecule: cr2
+spin: 5
+output_root: scratch
+log_dir: excited_states/cr2_16_new/
+excited_states: true
+dvr_options:
+  type: 1d
+  box_lims: [4, 6.5]
+  dx: 0.15625
+  count: 16
+vqe_options:
+  optimizers: [COBYLA.8000, L_BFGS_B.8000, SLSQP.1000]
+  repeats: 5
+  beta: [10000, 10000, 10000, 10000, 10000]
+  seed: 42
+ansatz_options_list:
+- type: twolocal
+  rotation_blocks: [ry]
+  entanglement_blocks: cx
+  entanglement: linear
+  reps: 1
+- type: twolocal
+  rotation_blocks: [ry]
+  entanglement_blocks: cx
+  entanglement: linear
+  reps: 2
+- type: twolocal
+  rotation_blocks: [ry]
+  entanglement_blocks: cx
+  entanglement: linear
+  reps: 3

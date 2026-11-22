@@ -1,4 +1,18 @@
+"""Circuit builders for the greedy and greedy-entangling ansatze."""
+
 def build_circuit(c, ansatz_options, opt_level=2):
+    """Build a circuit from an integer gate-code array (greedy ansatz).
+
+    Args:
+        c: (num_qubits, depth) integer array. Code 1 = RY (skipped if the qubit already ends in an
+            RY), 2 = CNOT from qubit q to q-1, 3 = CZ on (q, q-2), 0 = nothing.
+        ansatz_options: Needs ``add_h`` (start with Hadamards) and ``add_rs`` (start with RY on
+            every qubit).
+        opt_level: Qiskit transpiler optimisation level applied to the result.
+
+    Returns:
+        Transpiled QuantumCircuit.
+    """
     import numpy as np
     from qiskit import QuantumCircuit, transpile
     from qiskit.circuit import Parameter
@@ -48,6 +62,16 @@ def build_circuit(c, ansatz_options, opt_level=2):
     return out
 
 def find_allowed_gates(num_qubits, reps, partitions):
+    """List the CNOT indices allowed by a qubit partition.
+
+    CNOTs are indexed over the upper-triangular qubit pairs, repeated for each of ``reps`` layers.
+    A CNOT is allowed if both qubits lie in the same part of ``partitions``.
+
+    Args:
+        num_qubits: Number of qubits.
+        reps: Number of entangling layers.
+        partitions: List of lists of qubit indices.
+    """
     import numpy as np
 
     tri_inds = np.triu_indices(num_qubits, k=1)
@@ -63,16 +87,29 @@ def find_allowed_gates(num_qubits, reps, partitions):
     return allowed_gates
 
 def partition_string_to_list(p_string):
+    """Convert a partition string such as ``'012-34'`` to ``[[0, 1, 2], [3, 4]]``."""
     p_list = p_string.split('-')
     out = list(map(lambda p: [int(s) for s in p], p_list))
     return out
 
 def partition_list_to_string(p_list):
+    """Convert a partition such as ``[[0, 1, 2], [3, 4]]`` to ``'012-34'``."""
     out = list(map(lambda p: ''.join(map(lambda i: str(i), p)), p_list))
     out = '-'.join(out)
     return out
 
 def build_circuit_ent(ansatz_options, gates, simplify=False):
+    """Build a greedy-entangling ansatz: RY layers separated by selected CNOT layers.
+
+    Args:
+        ansatz_options: Needs ``num_qubits``, ``reps`` (number of entangling layers) and
+            ``constructive`` (True: ``gates`` lists the CNOTs to include; False: the CNOTs to omit).
+        gates: CNOT indices over the upper-triangular qubit pairs, offset by layer.
+        simplify: Skip an RY on a qubit whose previous gate was already an RY.
+
+    Returns:
+        QuantumCircuit.
+    """
     import numpy as np
     from qiskit import QuantumCircuit
     from qiskit.circuit import Parameter

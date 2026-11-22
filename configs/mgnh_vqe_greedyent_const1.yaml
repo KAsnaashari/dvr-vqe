@@ -1,0 +1,26 @@
+# Reproduces mgnh_vqe_greedyent_const1.py (group: greedyent_const).
+# Generated from the original script by tools/verify_configs.py --generate.
+# Run with: python scripts/run_dvr_vqe.py configs/mgnh_vqe_greedyent_const1.yaml
+group: greedyent_const
+source_script: mgnh_vqe_greedyent_const1.py
+molecule: mgnh
+potential_file: mgnh.txt
+take_cos: false
+output_root: scratch
+log_dir: partitions/mgnh_32/0123-4/
+excited_states: false
+dvr_options: {type: jacobi, N_R: 20, N_theta: 4, l: 1, K_max: 0, r_min: 3, r_max: 6, trunc: 0, J: 0}
+vqe_options:
+  optimizers: [L_BFGS_B.8000, SLSQP.1000]
+  repeats: 5
+  seed: 42
+ansatz_options:
+  type: greedyent
+  constructive: true
+  layers: 10
+  num_keep: 1
+  num_qubits: 5
+  reps: 1
+  partitions:
+  - [0, 1, 2, 3]
+  - [4]

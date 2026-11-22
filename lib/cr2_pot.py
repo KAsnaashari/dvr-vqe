@@ -1,3 +1,7 @@
+"""Cr2 potential curves. Duplicate of the first part of :mod:`lib.pot_gen`; the run
+scripts import from :mod:`lib.pot_gen`.
+"""
+
 import numpy as np
 
 cr2_pot_points = {
@@ -32,6 +36,13 @@ cr2_pot_points = {
 }
 
 def pot_fun(r, lims, interp_f):
+   """Evaluate an interpolated potential, held constant below the first data point.
+
+   Args:
+       r: Distance(s) (bohr).
+       lims: (r_first, r_last) of the data.
+       interp_f: Interpolating function.
+   """
    if type(r) is not np.ndarray:
       r = np.array([r])
    out = np.zeros(r.shape)
@@ -40,6 +51,14 @@ def pot_fun(r, lims, interp_f):
    return out
 
 def get_pot_cr2(s):
+   """Cubic-spline Cr2 potential curve for total spin ``s``.
+
+   Args:
+       s: Total spin S (1, 3, ..., 13), key of ``cr2_pot_points``.
+
+   Returns:
+       (V, lims): V(r) with r in bohr and V in hartree, and the (first, last) r of the data.
+   """
    from scipy.interpolate import interp1d
 
    rs = cr2_pot_points[s][0]
