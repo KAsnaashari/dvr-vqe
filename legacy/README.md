@@ -9,3 +9,5 @@ python -m legacy.arhcl_vqe_excited2
 ```
 
 Data and output directories are set as described in the main README (`DVR_VQE_DATA_DIR`, `DVR_VQE_SCRATCH_DIR`, `DVR_VQE_RESULTS_DIR`). Unlike the runner, these scripts do not create their output directory, so it must exist before the run.
+
+`mgnh_vqe_excited.py` and `mgnh_vqe_greedy.py` were written for an older version of `lib/` and do not run with the current code; they have no config.
